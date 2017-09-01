@@ -106,12 +106,12 @@ for slidewindow=1:size(signal,1)-round(1.2604*Fs)-1
     
     sumsrow = sum(sum(D));
     
-    if (mod(slidewindow,200*10)==0)
+    if (mod(slidewindow,200)==0)
         fprintf('.');
     end
     
-    if (mod(slidewindow,200*100)==0)
-        fprintf('\n%d',slidewindow);
+    if (mod(slidewindow,200*10)==0)
+        fprintf('\n%d:',slidewindow);
     end
             
     
