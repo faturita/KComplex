@@ -82,6 +82,8 @@ fprintf('%d\n', size(M,2));
 kdtree = vl_kdtreebuild(M) ;
 fdist = [];
 
+TM = [];
+
 %%
 for slidewindow=1:size(signal,1)-round(1.2604*Fs)-1
     signalsegment = signal(slidewindow:slidewindow+round(1.2604*Fs),1);    
@@ -98,36 +100,102 @@ for slidewindow=1:size(signal,1)-round(1.2604*Fs)-1
     %             end
 
     [frames, desc] = PlaceDescriptorsByImage(eegimg, DOTS,siftscale, siftdescriptordensity,qKS,zerolevel,false,'euclidean');
-
-    K = size(M,2);
-    distancetype='euclidean';
-    
-    [IDX, D] = vl_kdtreequery(kdtree,M,desc,'NumNeighbors',7);
-    
-    sumsrow = sum(sum(D));
-    
+    TM = [TM desc];
     if (mod(slidewindow,200)==0)
         fprintf('.');
     end
     
     if (mod(slidewindow,200*10)==0)
         fprintf('\n%d:',slidewindow);
-    end
-            
-    
-%     [Z,I] = pdist2(M',desc',distancetype,'Smallest',K );
+    end    
+end
+
+
+save('kcomplex.mat');
+
+[IDX, D] = vl_kdtreequery(kdtree,M,TM,'NumNeighbors',1);
+
+%%
+figure('Name','KComplex)','NumberTitle','off');
+setappdata(gcf, 'SubplotDefaultAxesLocation', [0, 0, 1, 1]);
+fcounter=1;
+for i=1:size(M,2)
+    ah=subplot_tight(6,5,fcounter,[0 0]);
+    DisplayDescriptorImageFull(F,1,IX(i,3),IX(i,2),IX(i,1),IX(i,4),true);
+    fcounter=fcounter+1;
+end
+
+%%
+% for i=1:size(TM,2)
+%     K = size(M,2);
+%     distancetype='euclidean';
 %     
-%     k = 1;
-% 
-%     %Wi = Wdi(I(1:k,1:6)) ./ repmat( sum(Wdi(I(1:k,1:6))),k,1);     
-%     Wi = ones(k,1);
-%     if (k==1)
-%         sumsrow = Z(1:k,1:1).*Wi(1:k,1:1);
-%     else
-%         sumsrow = dot(Z(1:k,1:1),Wi(1:k,1:1));
+%     [IDX, D] = vl_kdtreequery(kdtree,M,desc,'NumNeighbors',1);
+%     
+%     sumsrow = sum(sum(D));
+%     
+%     if (mod(slidewindow,200)==0)
+%         fprintf('.');
 %     end
+%     
+%     if (mod(slidewindow,200*10)==0)
+%         fprintf('\n%d:',slidewindow);
+%     end
+%             
+%     
+% %     [Z,I] = pdist2(M',desc',distancetype,'Smallest',K );
+% %     
+% %     k = 1;
+% % 
+% %     %Wi = Wdi(I(1:k,1:6)) ./ repmat( sum(Wdi(I(1:k,1:6))),k,1);     
+% %     Wi = ones(k,1);
+% %     if (k==1)
+% %         sumsrow = Z(1:k,1:1).*Wi(1:k,1:1);
+% %     else
+% %         sumsrow = dot(Z(1:k,1:1),Wi(1:k,1:1));
+% %     end
+%     
+%     fdist(end+1) = sumsrow;
+%     
+% end
+
+%%
+fdist=D;
+[values,order] = sort(fdist);
+
+eventssample = round(events(:,1)*Fs+1.2604/2*Fs);
+
+
+tp=zeros(1,size(eventssample,1));
+fp=[];
+
+for i=1:size(eventssample,1)
     
-    fdist(end+1) = sumsrow;
+    [ids, spdist] = knnsearch(eventssample,order(i),'k',1);
+    
+    if (spdist<1.26*Fs)
+        tp(ids) = 1;
+    end
     
 end
+
+
+
+%%
+
+figure;
+hold on;
+plot(fdist);
+for i=1:size(events,1)
+    %figure;
+    %plot(record(3,round(events(i,1)*Fs):round(events(i,1)*Fs+events(i,2)*Fs)))
+    %figure;
+    %plot(signal(1,round(events(i,1)*Fs)-200:round(events(i,1)*Fs+events(i,2)*Fs)+200))
+    %EEG(1,1,i).EEG = signal(round(events(i,1)*Fs):round(events(i,1)*Fs+1.2604*Fs),1);
+    
+    plot( round(events(i,1)*Fs+1.2604/2*Fs),0.5*10^6,'rx');
+    plot( order(i),0.5*10^6,'b.');
+end
+hold off;
+
 
