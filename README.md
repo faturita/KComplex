@@ -100,6 +100,49 @@ Los descriptores obtenidos son:
 ![Descriptores](images/bagofdescriptors.png)
 
 
+```matlab
+
+%%
+[IDX, D] = vl_kdtreequery(kdtree,M,TM,'NumNeighbors',1);
+
+fdist=D;
+[values,order] = sort(fdist);
+
+eventssample = round(events(:,1)*Fs+1.2604/2*Fs);
+
+
+tp=zeros(1,size(eventssample,1));
+fp=[];
+
+for i=1:size(eventssample,1)
+    
+    [ids, spdist] = knnsearch(eventssample,order(i),'k',1);
+    
+    if (spdist<1.26*Fs)
+        tp(ids) = 1;
+    end
+    
+end
+
+```
+
+Verificando con K=1 encuentra, trivialmente, los descriptores que corresponden a los kcomplex marcados por el analista 1.  El criterio para la identificación es que el punto donde se encuentra el mínimo en la comparación entre los descriptores, no exceda en más de 1.26 s la ubicación real del k-complex.   Este valor corresponde a la longitud promedio informada x ese mismo analista.
+
+
+# Con k=7
+
+Con k=7, dentro de los primeros 100 posiciones que minimizan la distancia entre los descriptores en cada una de esas posiciones y los 7 vecinos más cercanos, encuentra de los 34, solo dos.
+
+Si en la bolsa, se ponen sólo 10 descriptores representativos de kcomplex, 
+
+Recién es necesario ver los primeros 10000 valores que minimizan esas distancias, para alcanzar la identificación del 100%.
+
+# Regularizando, y Generalizando.
+
+Dividiendo el "dataset" en dos, es decir, utilizando por ejemplo los primeros 15 descriptores, para identificar los segundos 19.  Buscando los primeros 34 distancias mínimas se encuentran dos de los 19 y hacen falta 11679 valores mínimos hasta encontrar los que corresponden.
+
+
+
 Automatic study of KComplex elements in Sleep EEG
 * https://en.wikipedia.org/wiki/K-complex
 * http://ieeexplore.ieee.org/abstract/document/5626447/
