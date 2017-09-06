@@ -1,5 +1,4 @@
 # KComplex
-
 Los componentes KComplex son eventos que se presentan en los EEG, y están relacionados con la etapa 2 del sueño.  Las razones de su nombre quedó perdido en la propia historia de su descubrimiento. Se cree que tiene dos componentes uno endógeno y otro exógeno y que se presentan como mecanismos que tiene el cerebro para descartar información sensorial ambiental y mantener el estado de sueño.
 
 Tienen una amplitud de casi 100 micoVoltios, muy por encima del EEG de fondo, y una forma y caracterización bastante particular.
@@ -61,9 +60,22 @@ El procedimiento de detección procede como sigue: se toma la señal de EEG mono
 
 Finalmente se calcula la Distancia (K=1) de los casi 360 mil descriptores a los 34 descriptores marcados y se verifican que los mínimos sean encontrados.
 
+## Parámetros
+
+Fs=200
+w = 1.26
+DeltaS = sqrt(2)*15
+sigma=1
+sigmat=1
+
+La resolución es 1 Px = 1/200 s, y 1 Py = 1 microVolt.  Así para que "entre" el KComplex (de alrededor de 100 microVolt) la imagen tiene que tener un tamaño de Hy = 200, y Wx = 248 (por el largo del kcomplex).
+
+De estos parametros, surge que St = 11.6 y Sv = 9.42, que son las escalas del descriptor.
+ 
+
 # Verificación
 
-Arrancando con la prueba trivial, la función ''D'' se hace 0 en las 34 localizaciones donde están los descriptores de la bolsa.
+Arrancando con la prueba trivial, la función ''D'' se minimiza en 0 en las 34 localizaciones donde están los descriptores de la bolsa.
 
 ```matlab
 >> find(D==0)
@@ -94,7 +106,9 @@ ans =
 
       250922      288316      332879      336680
 ```      
-      
+
+(valores en unidades de sample-point)
+
 Los descriptores obtenidos son:
 
 ![Descriptores](images/bagofdescriptors.png)
@@ -131,9 +145,7 @@ Verificando con K=1 encuentra, trivialmente, los descriptores que corresponden a
 
 # Con k=7
 
-Con k=7, dentro de los primeros 100 posiciones que minimizan la distancia entre los descriptores en cada una de esas posiciones y los 7 vecinos más cercanos, encuentra de los 34, solo dos.
-
-Si en la bolsa, se ponen sólo 10 descriptores representativos de kcomplex, 
+Con k=7, dentro de las primeras 100 posiciones que minimizan la distancia entre los descriptores en cada una de esas posiciones y los 7 vecinos más cercanos, encuentra de los 34, solo dos.
 
 Recién es necesario ver los primeros 10000 valores que minimizan esas distancias, para alcanzar la identificación del 100%.
 
@@ -150,7 +162,8 @@ Puede llegar a funcionar pero requiere mucho más tiempo.
 
 
 
-Automatic study of KComplex elements in Sleep EEG
+# References
+
 * https://en.wikipedia.org/wiki/K-complex
 * http://ieeexplore.ieee.org/abstract/document/5626447/
 * http://www.tcts.fpms.ac.be/~devuyst/publications/devuyst_EMBC2010.pdf
