@@ -151,15 +151,16 @@ Recién es necesario ver los primeros 10000 valores que minimizan esas distancia
 
 # Regularizando, y Generalizando.
 
-Dividimos el "dataset" en dos, es decir, utilizando por ejemplo los primeros 15 descriptores, para identificar los segundos 19.  
+Dividimos el "dataset" en dos, es decir, utilizando los primeros 15 descriptores, para identificar los segundos 19.  
 
-Luego se obtienen las distancias a todos los descriptores, las ordenos de menor a mayor y asumiría que en las primeras estarían las distancias a precisamente los valores específicos donde estaban los kcomplex.
+Luego se obtienen las distancias a todos los descriptores, se ordenan de menor a mayor y asumiría que en las primeras estarían las distancias a precisamente los valores específicos donde estaban los kcomplex.
 
-Necesito así las 11679 valores mínimos hasta encontrar los que corresponden (de 360000).  De estos 11679, 2800 corresponden a aciertos, en tanto que el resto 8000 corresponden a falsos positivos.
+Necesito así las 11679 valores mínimos hasta encontrar los que corresponden (de 360000).  De estos 11679, 2800 corresponden a aciertos, en tanto que el resto 8000 corresponden a falsos positivos.  Esto da un valor de aproximadamente 20%, lejos de los 80% que reportan en los papers.
 
 # Conclusion
-Puede llegar a funcionar pero requiere mucho más tiempo.
 
+* Requiere mucho más análisis para verificar y comprobar cuáles pueden ser los parámetros específicos para que funcione bien.
+* Del gráfico de los descriptores, surge que es también un problema identificar exactamente (al igual que con p300) donde ubicar el descriptor.
 
 
 # References
