@@ -1,5 +1,4 @@
 # KComplex
-
 Los componentes KComplex son eventos que se presentan en los EEG, y están relacionados con la etapa 2 del sueño.  Las razones de su nombre quedó perdido en la propia historia de su descubrimiento. Se cree que tiene dos componentes uno endógeno y otro exógeno y que se presentan como mecanismos que tiene el cerebro para descartar información sensorial ambiental y mantener el estado de sueño.
 
 Tienen una amplitud de casi 100 micoVoltios, muy por encima del EEG de fondo, y una forma y caracterización bastante particular.
@@ -61,9 +60,22 @@ El procedimiento de detección procede como sigue: se toma la señal de EEG mono
 
 Finalmente se calcula la Distancia (K=1) de los casi 360 mil descriptores a los 34 descriptores marcados y se verifican que los mínimos sean encontrados.
 
+## Parámetros
+
+Fs=200
+w = 1.26
+DeltaS = sqrt(2)*15
+sigma=1
+sigmat=1
+
+La resolución es 1 Px = 1/200 s, y 1 Py = 1 microVolt.  Así para que "entre" el KComplex (de alrededor de 100 microVolt) la imagen tiene que tener un tamaño de Hy = 200, y Wx = 248 (por el largo del kcomplex).
+
+De estos parametros, surge que St = 11.6 y Sv = 9.42, que son las escalas del descriptor.
+ 
+
 # Verificación
 
-Arrancando con la prueba trivial, la función ''D'' se hace 0 en las 34 localizaciones donde están los descriptores de la bolsa.
+Arrancando con la prueba trivial, la función ''D'' se minimiza en 0 en las 34 localizaciones donde están los descriptores de la bolsa.
 
 ```matlab
 >> find(D==0)
@@ -94,13 +106,65 @@ ans =
 
       250922      288316      332879      336680
 ```      
-      
+
+(valores en unidades de sample-point)
+
 Los descriptores obtenidos son:
 
 ![Descriptores](images/bagofdescriptors.png)
 
 
-Automatic study of KComplex elements in Sleep EEG
+```matlab
+
+%%
+[IDX, D] = vl_kdtreequery(kdtree,M,TM,'NumNeighbors',1);
+
+fdist=D;
+[values,order] = sort(fdist);
+
+eventssample = round(events(:,1)*Fs+1.2604/2*Fs);
+
+
+tp=zeros(1,size(eventssample,1));
+fp=[];
+
+for i=1:size(eventssample,1)
+    
+    [ids, spdist] = knnsearch(eventssample,order(i),'k',1);
+    
+    if (spdist<1.26*Fs)
+        tp(ids) = 1;
+    end
+    
+end
+
+```
+
+Verificando con K=1 encuentra, trivialmente, los descriptores que corresponden a los kcomplex marcados por el analista 1.  El criterio para la identificación es que el punto donde se encuentra el mínimo en la comparación entre los descriptores, no exceda en más de 1.26 s la ubicación real del k-complex.   Este valor corresponde a la longitud promedio informada x ese mismo analista.
+
+
+# Con k=7
+
+Con k=7, dentro de las primeras 100 posiciones que minimizan la distancia entre los descriptores en cada una de esas posiciones y los 7 vecinos más cercanos, encuentra de los 34, solo dos.
+
+Recién es necesario ver los primeros 10000 valores que minimizan esas distancias, para alcanzar la identificación del 100%.
+
+# Regularizando, y Generalizando.
+
+Dividimos el "dataset" en dos, es decir, utilizando los primeros 15 descriptores, para identificar los segundos 19.  
+
+Luego se obtienen las distancias a todos los descriptores, se ordenan de menor a mayor y asumiría que en las primeras estarían las distancias a precisamente los valores específicos donde estaban los kcomplex.
+
+Necesito así las 11679 valores mínimos hasta encontrar los que corresponden (de 360000).  De estos 11679, 2800 corresponden a aciertos, en tanto que el resto 8000 corresponden a falsos positivos.  Esto da un valor de aproximadamente 20%, lejos de los 80% que reportan en los papers.
+
+# Conclusion
+
+* Requiere mucho más análisis para verificar y comprobar cuáles pueden ser los parámetros específicos para que funcione bien.
+* Del gráfico de los descriptores, surge que es también un problema identificar exactamente (al igual que con p300) donde ubicar el descriptor.
+
+
+# References
+
 * https://en.wikipedia.org/wiki/K-complex
 * http://ieeexplore.ieee.org/abstract/document/5626447/
 * http://www.tcts.fpms.ac.be/~devuyst/publications/devuyst_EMBC2010.pdf
