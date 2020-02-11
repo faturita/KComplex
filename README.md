@@ -6,7 +6,7 @@ Tienen una amplitud de casi 100 micoVoltios, muy por encima del EEG de fondo, y 
 
 ![KComplex](images/kcomplex.png)
 
-En ![Dataset](http://www.tcts.fpms.ac.be/~devuyst/Databases/DatabaseKcomplexes/#More) se encuentra el dataset en cuestión, compueseto por 10 extractos de 10 sujetos de 2 hs cada uno, sampleados a Fs=200 Hz en formato EDF.  Para los primeros 5 sujetos, se dispone de dos anotaciones por expertos, que visualmente marcaron las ubicaciones de los KComplex en el dataset, y además se dispone de una marca automática calculada según el algoritmo ![Algoritmo](http://ieeexplore.ieee.org/abstract/document/5626447/).
+En http://www.tcts.fpms.ac.be/~devuyst/Databases/DatabaseKcomplexes/#More se encuentra el dataset en cuestión, compueseto por 10 extractos de 10 sujetos de 2 hs cada uno, sampleados a Fs=200 Hz en formato EDF.  Para los primeros 5 sujetos, se dispone de dos anotaciones por expertos, que visualmente marcaron las ubicaciones de los KComplex en el dataset, y además se dispone de una marca automática calculada según el algoritmo http://ieeexplore.ieee.org/abstract/document/5626447/.
 
 # Primer extracto
 
